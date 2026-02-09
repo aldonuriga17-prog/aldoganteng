@@ -20,6 +20,7 @@ use App\Http\Controllers\Petugas\LaporanController;
 // ================= PEMINJAM =================
 use App\Http\Controllers\Peminjam\AlatController as PeminjamAlatController;
 use App\Http\Controllers\Peminjam\PeminjamanController as PeminjamPeminjamanController;
+use App\Http\Controllers\Peminjam\PengembalianController;
 use App\Http\Controllers\Peminjam\LogAktivitasController;
 
 
@@ -116,6 +117,12 @@ Route::prefix('petugas')
             [PetugasPeminjamanController::class, 'kembalikan']
         )->name('peminjaman.kembalikan');
 
+        // ✅ UPDATE DENDA MANUAL (FIX DI SINI)
+        Route::put(
+            '/peminjaman/{id}/denda',
+            [PetugasPeminjamanController::class, 'updateDenda']
+        )->name('peminjaman.updateDenda');
+
         Route::resource('pengembalian', PetugasPengembalianController::class)
             ->only(['index']);
 
@@ -130,6 +137,7 @@ Route::prefix('petugas')
             [PetugasPeminjamanController::class, 'logAktivitas']
         )->name('logaktivitas.index');
     });
+
 
 
 // ================= PEMINJAM ROUTE =================
@@ -171,4 +179,14 @@ Route::prefix('peminjam')
             '/peminjaman',
             [PeminjamPeminjamanController::class, 'index']
         )->name('peminjaman.index');
+        // ================= PENGEMBALIAN =================
+        Route::get(
+            '/pengembalian',
+            [PengembalianController::class, 'index']
+        )->name('pengembalian.index');
+
+        Route::post(
+            '/pengembalian/{id}',
+            [PengembalianController::class, 'store']
+        )->name('pengembalian.store');
     });

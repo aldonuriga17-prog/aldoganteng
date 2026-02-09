@@ -1,63 +1,88 @@
-<nav class="custom-navbar py-2">
-    <style>
-        .custom-navbar{backdrop-filter: blur(6px);background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.35));border-radius:14px;padding:6px 12px;margin:10px;box-shadow:0 6px 22px rgba(2,6,23,0.06)}
-        .custom-brand{display:flex;align-items:center;gap:12px}
-        .brand-logo{width:46px;height:46px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-family:Inter;background:linear-gradient(135deg,#6ee7b7,#06b6d4);transform:rotate(-8deg);box-shadow:0 6px 18px rgba(6,182,212,0.12)}
-        .brand-title{font-weight:700;letter-spacing:0.6px;color:#0f172a}
-        .nav-search{min-width:280px}
-        .nav-search .form-control{border-radius:999px;background:rgba(15,23,42,0.04);border:1px solid rgba(2,6,23,0.04)}
-        .nav-actions .btn{border-radius:10px}
-        .notif-dot{position:relative}
-        .notif-dot::after{content:'';position:absolute;top:4px;right:6px;width:10px;height:10px;border-radius:50%;background:#ef4444;border:2px solid #fff}
-        @media (max-width:768px){ .nav-search{display:none} }
-    </style>
+<nav class="navbar navbar-expand-lg px-4 py-3">
+    <div class="container-fluid d-flex align-items-center">
 
-    <div class="container-fluid d-flex align-items-center justify-content-between">
+        <!-- Elegant Brand Section -->
         <div class="d-flex align-items-center">
-            <div class="custom-brand">
-                <a href="/" class="d-flex align-items-center text-decoration-none">
-                    <div class="brand-logo">A</div>
-                    <div>
-                        <div class="brand-title">SIPAT</div>
-                        <small class="text-muted">Sistem Peminjaman</small>
-                    </div>
-                </a>
+            <div class="brand-icon me-3">
+                <i class="bi bi-house-door-fill fs-4"></i>
+            </div>
+            <div>
+                <h5 class="mb-0 fw-bold">@yield('page_title', 'Dashboard')</h5>
+                <small class="text-muted">Sistem Peminjaman Alat</small>
             </div>
         </div>
 
-        <div class="nav-search d-none d-md-block">
-            <form class="d-flex">
-                <input class="form-control me-2" type="search" placeholder="Cari alat, peminjam..." aria-label="Search">
-                <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-search"></i></button>
-            </form>
-        </div>
+        <!-- Spacer -->
+        <div class="flex-grow-1"></div>
 
-        <div class="nav-actions d-flex align-items-center gap-2">
-            <a href="#" class="btn btn-light btn-sm notif-dot" title="Notifikasi"><i class="bi bi-bell"></i></a>
+        <!-- Elegant User Section -->
+        <div class="d-flex align-items-center gap-3">
 
-            @auth
-                <div class="dropdown">
-                    <a class="d-flex align-items-center text-decoration-none dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                        <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center" style="width:38px;height:38px">{{ strtoupper(substr(auth()->user()->name,0,1)) }}</div>
-                    </a>
+            <!-- Notification Bell (Optional) -->
+            <button class="btn btn-link text-light position-relative" type="button">
+                <i class="bi bi-bell-fill fs-5"></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
+                    3
+                </span>
+            </button>
 
-                    <ul class="dropdown-menu dropdown-menu-end shadow">
-                        <li class="px-3 py-2 text-muted small">Login sebagai<br><strong>{{ auth()->user()->role }}</strong></li>
+            <!-- User Dropdown -->
+            <div class="dropdown">
+
+                @auth
+                    <button class="btn btn-elegant d-flex align-items-center gap-2"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                        <div class="avatar-circle me-2">
+                            <i class="bi bi-person-circle"></i>
+                        </div>
+                        <div class="text-start">
+                            <div class="fw-semibold">{{ auth()->user()->name }}</div>
+                            <small class="text-muted">{{ ucfirst(auth()->user()->role) }}</small>
+                        </div>
+                        <i class="bi bi-chevron-down ms-2"></i>
+                    </button>
+
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0">
+                        <li class="px-3 py-3">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-circle me-3">
+                                    <i class="bi bi-person-circle"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-semibold">{{ auth()->user()->name }}</div>
+                                    <small class="text-muted">{{ auth()->user()->email ?? 'No email' }}</small>
+                                </div>
+                            </div>
+                        </li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#">Profil</a></li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center" href="#">
+                                <i class="bi bi-gear me-2"></i> Pengaturan
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
                         <li>
                             <form action="{{ route('logout') }}" method="POST">
                                 @csrf
-                                <button type="submit" class="dropdown-item text-danger">Logout</button>
+                                <button type="submit" class="dropdown-item d-flex align-items-center text-danger">
+                                    <i class="bi bi-box-arrow-right me-2"></i> Logout
+                                </button>
                             </form>
                         </li>
                     </ul>
-                </div>
-            @endauth
+                @endauth
 
-            @guest
-                <a href="{{ route('login') }}" class="btn btn-primary btn-sm">Login</a>
-            @endguest
+                @guest
+                    <a href="{{ route('login') }}" class="btn btn-elegant">
+                        <i class="bi bi-box-arrow-in-right me-2"></i> Login
+                    </a>
+                @endguest
+
+            </div>
+
         </div>
+
     </div>
 </nav>

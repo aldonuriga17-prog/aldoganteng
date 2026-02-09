@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Petugas;
 use App\Http\Controllers\Controller;
 use App\Models\Peminjaman;
 use App\Models\Pengembalian;
-
 use Illuminate\Http\Request;
 use App\Models\Alat;
 use Carbon\Carbon;
@@ -23,7 +22,7 @@ class PeminjamanController extends Controller
         return view('petugas.peminjaman.index', compact('peminjamans'));
     }
 
-    // acc peminjaman
+    // ACC peminjaman
     public function approve($id)
     {
         $peminjaman = Peminjaman::findOrFail($id);
@@ -31,49 +30,50 @@ class PeminjamanController extends Controller
         if (!$peminjaman->alat) {
             abort(400, 'Alat tidak ditemukan');
         }
+
         if ($peminjaman->alat->jumlah_alat < $peminjaman->jumlah_pinjam) {
             abort(400, 'Stok tidak mencukupi');
         }
+
         $peminjaman->update(['status' => 'dipinjam']);
         $peminjaman->alat->decrement('jumlah_alat', $peminjaman->jumlah_pinjam);
+
         return back()->with('success', 'Peminjaman disetujui');
     }
 
-    // tolak
+    // Tolak peminjaman
     public function reject($id)
     {
         $peminjaman = Peminjaman::findOrFail($id);
-        $peminjaman->status = 'ditolak';
-        $peminjaman->save();
+        $peminjaman->update(['status' => 'ditolak']);
 
         return back()->with('success', 'Peminjaman ditolak');
     }
 
-    // proses pengembalian
+    // Proses pengembalian
     public function kembalikan($id)
     {
         $peminjaman = Peminjaman::with('alat')->findOrFail($id);
 
-        // validasi status
         if ($peminjaman->status !== 'dipinjam') {
             return back()->with('error', 'Peminjaman tidak valid untuk dikembalikan');
         }
 
         DB::transaction(function () use ($peminjaman) {
 
-            // simpan pengembalian
+            // Simpan pengembalian
             Pengembalian::create([
                 'peminjaman_id' => $peminjaman->id,
                 'tanggal_kembali' => now(),
             ]);
 
-            // kembalikan stok alat
+            // Kembalikan stok
             $peminjaman->alat->increment(
                 'jumlah_alat',
                 $peminjaman->jumlah_pinjam
             );
 
-            // update status peminjaman
+            // Update status
             $peminjaman->update([
                 'status' => 'dikembalikan'
             ]);
@@ -81,6 +81,24 @@ class PeminjamanController extends Controller
 
         return back()->with('success', 'Barang berhasil dikembalikan');
     }
+
+    // ✅ UPDATE DENDA MANUAL (INI YANG TADI BELUM ADA)
+    public function updateDenda(Request $request, $id)
+    {
+        $request->validate([
+            'denda' => 'required|integer|min:0'
+        ]);
+
+        $peminjaman = Peminjaman::findOrFail($id);
+
+        $peminjaman->update([
+            'denda' => $request->denda
+        ]);
+
+        return back()->with('success', 'Denda berhasil diperbarui');
+    }
+
+    // Log aktivitas
     public function logAktivitas()
     {
         $logs = Peminjaman::with(['user', 'alat'])

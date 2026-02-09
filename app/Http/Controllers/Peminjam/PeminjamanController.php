@@ -62,4 +62,6 @@ class PeminjamanController extends Controller
 
         return back()->with('success', 'Peminjaman berhasil dibatalkan');
     }
+
+    
 }

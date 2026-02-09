@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Alat;
 use App\Models\Kategori;
+use App\Models\Peminjaman;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -23,5 +24,14 @@ class DashboardController extends Controller
             'alatTersedia',
             'alatHabis'
         ));
+    }
+
+    public function logAktivitas()
+    {
+        $logs = Peminjaman::with(['user', 'alat'])
+            ->latest()
+            ->get();
+
+        return view('admin.log-aktivitas.index', compact('logs'));
     }
 }

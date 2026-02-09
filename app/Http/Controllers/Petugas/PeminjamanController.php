@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Petugas;
 use App\Http\Controllers\Controller;
 use App\Models\Peminjaman;
 use App\Models\Pengembalian;
+
 use Illuminate\Http\Request;
 use App\Models\Alat;
 use Carbon\Carbon;
@@ -22,7 +23,7 @@ class PeminjamanController extends Controller
         return view('petugas.peminjaman.index', compact('peminjamans'));
     }
 
-    // acc peminjaman 
+    // acc peminjaman
     public function approve($id)
     {
         $peminjaman = Peminjaman::findOrFail($id);
@@ -79,5 +80,13 @@ class PeminjamanController extends Controller
         });
 
         return back()->with('success', 'Barang berhasil dikembalikan');
+    }
+    public function logAktivitas()
+    {
+        $logs = Peminjaman::with(['user', 'alat'])
+            ->latest()
+            ->get();
+
+        return view('petugas.log-aktivitas.index', compact('logs'));
     }
 }

@@ -3,16 +3,19 @@
 namespace App\Http\Controllers\Peminjam;
 
 use App\Http\Controllers\Controller;
-use App\Models\LogAktivitas;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Peminjaman;
 
 class LogAktivitasController extends Controller
 {
     public function index()
     {
-        $logAktivitas = LogAktivitas::where('user_id', auth()->id())
+        $logs = Peminjaman::with('alat')
+            ->where('user_id', Auth::id())
             ->latest()
             ->get();
 
-        return view('peminjam.logaktivitas.index', compact('logAktivitas'));
+        return view('peminjam.logaktivitas.log-aktivitas', compact('logs'));
     }
 }

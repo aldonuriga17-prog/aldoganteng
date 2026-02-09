@@ -2,35 +2,55 @@
 
 @section('content')
 <div class="container">
-    <h4 class="mb-3">Log Aktivitas Saya</h4>
+    <h4 class="mb-4">Log Aktivitas</h4>
 
     <div class="card">
         <div class="card-body">
 
-            <table class="table table-bordered">
-                <thead class="table-success">
-                    <tr>
-                        <th>No</th>
-                        <th>Aktivitas</th>
-                        <th>Keterangan</th>
-                        <th>Tanggal</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($logAktivitas as $log)
-                    <tr>
-                        <td>{{ $loop->iteration }}</td>
-                        <td>{{ $log->aktivitas }}</td>
-                        <td>{{ $log->keterangan }}</td>
-                        <td>{{ $log->created_at->format('d-m-Y H:i') }}</td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="4" class="text-center">Belum ada aktivitas</td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
+            @if($logs->count() > 0)
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Nama Alat</th>
+                                <th>Tanggal Pinjam</th>
+                                <th>Tanggal Kembali</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($logs as $index => $log)
+                            <tr>
+                                <td>{{ $index + 1 }}</td>
+                                <td>{{ $log->alat->nama ?? '-' }}</td>
+                                <td>{{ $log->tanggal_pinjam }}</td>
+                                <td>{{ $log->tanggal_kembali ?? '-' }}</td>
+                                <td>
+                                    @if($log->status == 'menunggu')
+                                        <span class="badge bg-warning">Menunggu</span>
+                                    @elseif($log->status == 'disetujui')
+                                        <span class="badge bg-success">Disetujui</span>
+                                    @elseif($log->status == 'ditolak')
+                                        <span class="badge bg-danger">Ditolak</span>
+                                    @elseif($log->status == 'dikembalikan')
+                                        <span class="badge bg-primary">Dikembalikan</span>
+                                    @else
+                                        <span class="badge bg-secondary">
+                                            {{ $log->status }}
+                                        </span>
+                                    @endif
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <div class="alert alert-info">
+                    Belum ada aktivitas peminjaman.
+                </div>
+            @endif
 
         </div>
     </div>
